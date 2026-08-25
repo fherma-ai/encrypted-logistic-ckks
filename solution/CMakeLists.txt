@@ -1,0 +1,22 @@
+# GENERATED for logistic/logistic@1.0.0.
+cmake_minimum_required(VERSION 3.16)
+project(solution CXX)
+
+find_package(OpenFHE REQUIRED)
+
+# The library's own flags carry the ABI-relevant defines (MATHBACKEND); a
+# solution built without them links and then miscomputes.
+set(CMAKE_CXX_STANDARD ${OpenFHE_CXX_STANDARD})
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenFHE_CXX_FLAGS}")
+
+include_directories(${OpenFHE_INCLUDE} ${OpenFHE_INCLUDE}/third-party/include
+                    ${OpenFHE_INCLUDE}/core ${OpenFHE_INCLUDE}/pke
+                    ${OpenFHE_INCLUDE}/binfhe)
+link_directories(${OpenFHE_LIBDIR})
+
+add_executable(solution main.cpp solve.cpp)
+target_link_libraries(solution ${OpenFHE_SHARED_LIBRARIES})
+
+# The vendored polycircuit component includes OpenFHE as <openfhe/pke/...>,
+# which resolves from the include root; and itself from this directory.
+include_directories(${OpenFHE_INCLUDE}/.. ${CMAKE_CURRENT_SOURCE_DIR})
